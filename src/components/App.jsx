@@ -47,7 +47,7 @@ export default function App(){
   const buttonRef = React.useRef(null)
   React.useEffect(()=>{
     if(gameWon){
-      buttonRef.current?.focus()
+      buttonRef.current.focus()
     }
   },[gameWon])
   return (

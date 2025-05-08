@@ -1,75 +1,87 @@
-import React from "react"
-import Confetti from 'react-confetti'
-import Die from "./Die"
+import React from "react";
+import styles from "../styles/App.module.css";
+import DiceContainer from "./DiceContainer";
+import RollButton from "./RollButton";
+import Scoreboard from "./Scoreboard";
+import Die from "./Die";
 
+export default function App() {
+  const MAX_ROLLS = 3;
+  const NUM_DICE = 5;
 
-export default function App(){
-  const [dice, setDice] = React.useState(()=>generateAllNewDice())
+  const [dice, setDice] = React.useState(() => generateAllNewDice());
+  const [rollCount, setRollCount] = React.useState(0);
+  const [scoreboard, setScoreboard] = React.useState(initializeScoreboard);
 
-  const gameWon = dice.every(die => die.isHeld) &&
-  dice.every(die => die.value === dice[0].value)
-  function generateAllNewDice(){
-    return new Array(10)
-      .fill(0)
-      .map((_, index)=>({
-        value:Math.ceil(Math.random()*6),
-        isHeld:false,
-        id:index+1
-      }))
+  function generateAllNewDice() {
+    return new Array.from({ length: NUM_DICE }, (_, i) => ({
+      id: i + 1,
+      value: Math.ceil(Math.random() * 6),
+      isHeld: false,
+    }));
   }
 
-  const diceElements = dice.map((die)=>{
-    return (
-      <Die 
-        key={die.id}
-        value={die.value}
-        isHeld={die.isHeld}
-        className={die.isHeld ? "isHeld" : "isntHeld"}
-        onClick={hold}
-        id={die.id}/>)
-  })
-  function rollDice(){
-    if(!gameWon){
-    setDice(prevDice => prevDice.map(die =>
-      die.isHeld ? die :
-      {...die, value: Math.ceil(Math.random()*6)}
-    ))} else {
-      setDice(generateAllNewDice)
-    }
-
-  }
-  function hold(id){
-    setDice(prevDice => prevDice.map(die => {
-      return die.id === id ? {...die, isHeld: !die.isHeld} : die
-    }))
+  function rollDice() {
+    if (rollCount >= MAX_ROLLS) return;
+    setDice((prevDice) =>
+      prevDice.map((die) =>
+        die.isHeld ? die : { ...die, value: Math.ceil(Math.random() * 6) }
+      )
+    );
   }
 
-  const buttonRef = React.useRef(null)
-  React.useEffect(()=>{
-    if(gameWon){
-      buttonRef.current.focus()
-    }
-  },[gameWon])
+  function holdDie(id) {
+    setDice((prevDice) =>
+      prevDice.map((die) => {
+        die.id === id ? { ...die, isHeld: !die.isHeld } : die;
+      })
+    );
+  }
+
+  function handleScoreSelection(category, score) {
+    setScoreboard((prev) => ({
+      ...prev,
+      [category]: score,
+    }));
+    setDice(generateAllNewDice());
+    setRollCount(0);
+  }
+
+  function initializeScoreboard() {
+    return {
+      ones: null,
+      twos: null,
+      threes: null,
+      fours: null,
+      fives: null,
+      sixes: null,
+      onePair: null,
+      twoPairs: null,
+      threeOfKind: null,
+      fourOfKind: null,
+      fullHouse: null,
+      smallStraight: null,
+      largeStraight: null,
+      chance: null,
+      yatzy: null,
+    };
+  }
   return (
     <>
-      <main>
-        {gameWon && <Confetti />}
-        <div aria-live="polite" className="sr-only">
-          {gameWon && <p>Congratulations! You won! Press "New Game" to start again.</p>}
-        </div>
-        <h1 className="title">Tenzies</h1>
-        <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
-        <div className="dice-div">
-          {diceElements}
-        </div>
-        <button
-          ref={buttonRef}
-          className="roll-button"
-          onClick={rollDice}>
-          {gameWon ? "New Game" : "Roll"}
-        </button>
+      <main className="app">
+        <h1>Yatzy</h1>
+        <DiceContainer dice={dice} holdDie={holdDie} />
+        <RollButton
+          onRoll={rollDice}
+          rollCount={rollCount}
+          maxRolls={MAX_ROLLS}
+        />
+        <Scoreboard
+          dice={dice}
+          scoreboard={scoreboard}
+          onScoreSelect={handleScoreSelection}
+        />
       </main>
     </>
-  )
+  );
 }
-

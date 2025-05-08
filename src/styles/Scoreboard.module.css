@@ -1,0 +1,26 @@
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.category {
+  padding: 0.5rem;
+  background-color: #f8f8f8;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.category:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.used {
+  background-color: #ddd;
+  color: #777;
+  cursor: not-allowed;
+}

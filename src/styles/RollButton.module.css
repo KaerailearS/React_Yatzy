@@ -1,0 +1,20 @@
+.rollButton {
+  font-size: 1.2rem;
+  padding: 0.75rem 2rem;
+  margin-top: 1rem;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.rollButton:hover:not(:disabled) {
+  background-color: #005fa3;
+}
+
+.rollButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

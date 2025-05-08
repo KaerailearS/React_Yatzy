@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import './index.css'
+import './styles/main.css'
 import App from './components/App.jsx'
   /**
   * Challenge: Start a brand new React app!

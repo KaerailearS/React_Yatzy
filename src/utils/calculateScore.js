@@ -1,11 +1,12 @@
 export default function calculateScore(category, dice) {
+  if (!Array.isArray(dice) || dice.length === 0) return 0;
   const values = dice.map((d) => d.value);
   const counts = {};
   values.forEach((v) => (counts[v] = (counts[v] || 0) + 1));
 
   const countValues = Object.values(counts);
   const entries = Object.entries(counts).map(([v, c]) => ({
-    value: Number[v],
+    value: Number(v),
     count: c,
   }));
   const sum = values.reduce((a, b) => a + b, 0);

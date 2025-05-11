@@ -1,7 +1,6 @@
 .diceContainer {
   display: flex;
-  gap: 1rem;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 1rem; /* adjust as needed */
   margin: 1rem 0;
 }

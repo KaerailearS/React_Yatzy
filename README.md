@@ -25,4 +25,4 @@ Acknowledgements;
 
 Scrimba.com - Learn React course for the Tenzies base project (and most of my React knowledge)
 Google.com - Google!
-Chatgpt.com - Basically Google with a very wonky mind.
+Chatgpt.com - Basically Google with a very wonky mind. Very useful for proofchecking spelling, but also very accident prone, and seems to occasionally not agree with your naming conventions, or even things you've told it specifically to remember.

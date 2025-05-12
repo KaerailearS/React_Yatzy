@@ -4,7 +4,9 @@ import DiceContainer from "./DiceContainer";
 import RollButton from "./RollButton";
 import Scoreboard from "./Scoreboard";
 import calculateScore from "../utils/calculateScore";
-import {calculateUpperScore, calculateLowerScore, calculateTotalScore} from "../utils/calculateTotalScore";
+import { calculateTotalScore } from "../utils/calculateTotalScore";
+import PlayerSetup from "./PlayerSetup";
+import createEmptyScoreboard from "../utils/createEmptyScoreboard";
 
 export default function App() {
   const MAX_ROLLS = 2;
@@ -28,9 +30,12 @@ export default function App() {
   ];
 
   const [dice, setDice] = React.useState(() => generateAllNewDice());
-  const [scoreboard, setScoreboard] = React.useState(initializeScoreboard);
+  const [scoreboards, setScoreboards] = React.useState();
   const [rollsLeft, setRollsLeft] = React.useState(2);
   const [gameOver, setGameOver] = React.useState(false);
+  const [players, setPlayers] = React.useState([]);
+  const [gameStarted, setGameStarted] = React.useState(false);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = React.useState(0);
 
   function generateAllNewDice() {
     return Array.from({ length: NUM_DICE }, (_, i) => ({
@@ -66,77 +71,98 @@ export default function App() {
     }
 
     const score = calculateScore(category, dice);
-    const updatedScoreboard = {
-      ...scoreboard,
-      [category]: score,
-    };
+    const updatedScoreboards = [...scoreboards];
+    const currentScoreboard = { ...updatedScoreboards[currentPlayerIndex] };
+    currentScoreboard[category] = score;
 
-    setScoreboard(updatedScoreboard);
+    updatedScoreboards[currentPlayerIndex] = currentScoreboard;
 
-    const allUsed = Object.values(updatedScoreboard).every(
+    setScoreboards(updatedScoreboards);
+
+    const allUsed = Object.values(currentScoreboard).every(
       (val) => val !== null
     );
-    if (allUsed) {
+
+    const allPlayersDone = updatedScoreboards.every((sb) =>
+      Object.values(sb).every((val) => val !== null)
+    );
+
+    if (allPlayersDone) {
       setGameOver(true);
     } else {
-        setDice(generateAllNewDice());
-        setRollsLeft(MAX_ROLLS);
-  }
-  }
-
-  function initializeScoreboard() {
-    return {
-      Ones: null,
-      Twos: null,
-      Threes: null,
-      Fours: null,
-      Fives: null,
-      Sixes: null,
-      "One Pair": null,
-      "Two Pairs": null,
-      "Three of a Kind": null,
-      "Four of a Kind": null,
-      "Full House": null,
-      "Small Straight": null,
-      "Large Straight": null,
-      Chance: null,
-      Yatzy: null,
-    };
+      let nextIndex = currentPlayerIndex;
+      do {
+        nextIndex = (nextIndex + 1) % players.length;
+      } while (
+        Object.values(updatedScoreboards[nextIndex]).every(
+          (val) => val !== null
+        )
+      );
+      setCurrentPlayerIndex(nextIndex);
+      setDice(generateAllNewDice());
+      setRollsLeft(MAX_ROLLS);
+    }
   }
 
-  function startNewGame() {
-    setScoreboard(initializeScoreboard);
-    setDice(generateAllNewDice);
+  function resetGame() {
+    setPlayers([]);
+    setScoreboards([]);
+    setDice(generateAllNewDice());
     setRollsLeft(2);
     setGameOver(false);
+    setCurrentPlayerIndex(0);
+    setGameStarted(false);
   }
 
-  const allCategoriesUsed = Object.values(scoreboard).every(
-    (score) => score !== null
-  );
   return (
     <>
-      <main className="app">
-        <h1>Yatzy</h1>
-        <DiceContainer dice={dice} holdDie={holdDie} />
-        <RollButton
-          onRoll={rollDice}
-          rollsLeft={rollsLeft}
-          maxRolls={MAX_ROLLS}
+      {!gameStarted ? (
+        <PlayerSetup
+          onStart={(playerList) => {
+            setPlayers(playerList);
+            setScoreboards(playerList.map(() => createEmptyScoreboard()));
+            setGameStarted(true);
+          }}
         />
-        <Scoreboard
-          dice={dice}
-          scoreboard={scoreboard}
-          onCategorySelect={handleCategorySelection}
-          gameOver={gameOver}
-        />
-      </main>
-      {gameOver && (
-        <div className={styles.gameOver}>
-          <h2>Game over!</h2>
-          <p>Your final score: {calculateTotalScore(scoreboard)}</p>
-          <button onClick={startNewGame}>New game?</button>
-        </div>
+      ) : (
+        <>
+          <main className="app">
+            <h1>Yatzy</h1>
+            <h2 className={styles.currentPlayer}>Current player: {players[currentPlayerIndex]}</h2>
+            <DiceContainer dice={dice} holdDie={holdDie} />
+            <RollButton
+              onRoll={rollDice}
+              rollsLeft={rollsLeft}
+              maxRolls={MAX_ROLLS}
+            />
+            <Scoreboard
+              players={players}
+              scoreboards={scoreboards}
+              dice={dice}
+              currentPlayerIndex={currentPlayerIndex}
+              onCategorySelect={handleCategorySelection}
+              gameOver={gameOver}
+            />
+          </main>
+          {gameOver && (
+            <div className={styles.gameOver}>
+              <h2>Game over!</h2>
+              <h3>Final scores:</h3>
+              <ul>
+                {scoreboards.map((board, index) => {
+                  const score = calculateScore(board);
+                  const isWinner = score === highestScore;
+                  return (
+                    <li key={index} style={styles.isWinner}>
+                      {players[index]}: {score} {isWinner && "🏆"}
+                    </li>
+                  );
+                })}
+              </ul>
+              <button onClick={resetGame}>New game?</button>
+            </div>
+          )}
+        </>
       )}
     </>
   );

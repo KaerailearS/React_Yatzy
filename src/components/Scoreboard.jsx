@@ -8,14 +8,23 @@ import {
   calculateTotalScore,
 } from "../utils/calculateTotalScore.js";
 
-export default function Scoreboard({ dice, onCategorySelect, scoreboard, gameOver }) {
-  const upperScore = calculateUpperScore(scoreboard);
-  const lowerScore = calculateLowerScore(scoreboard);
+export default function Scoreboard({
+  players,
+  scoreboards,
+  dice,
+  currentPlayerIndex,
+  onCategorySelect,
+  gameOver,
+}) {
+  const currentScoreboard = scoreboards[currentPlayerIndex];
+
+  const upperScore = calculateUpperScore(currentScoreboard);
+  const lowerScore = calculateLowerScore(currentScoreboard);
   const bonus = calculateBonus(upperScore);
-  const totalScore = calculateTotalScore(scoreboard);
+  const totalScore = calculateTotalScore(currentScoreboard);
 
   function handleClick(category) {
-    if (scoreboard[category] === null && dice) {
+    if (currentScoreboard[category] === null && dice) {
       const score = calculateScore(category, dice);
       onCategorySelect(category, score);
     }
@@ -24,37 +33,56 @@ export default function Scoreboard({ dice, onCategorySelect, scoreboard, gameOve
   return (
     <section className={styles.scoreboard}>
       <h2>Scoreboard</h2>
-      <div className={styles.categories}>
-        {Object.keys(scoreboard).map((category) => {
-          const currentScore = scoreboard[category];
-          const potentialScore = dice ? calculateScore(category, dice) : null;
-          const isUsed = currentScore !== null;
-          const showPreview = !gameOver && dice && (!isUsed || currentScore !== potentialScore);
 
-          return (
-            <button
-              key={category}
-              className={styles.category}
-              disabled={isUsed}
-              onClick={() => handleClick(category)}
-            >
-              <span>{category}</span>
-              <span>
-                {isUsed ? (
-                  <>
-                    {currentScore}
-                  </>
-                ) : showPreview ? (
-                  <span className={styles.previewScore}>{potentialScore}</span>
-                ) : (
-                  "-"
-                )}
-              </span>
-            </button>
-          );
-        })}
+      <div className={styles.categories}>
+        <div className={styles.headerRow}>
+          <span>Category</span>
+          {players.map((player, index) => (
+            <span key={index}>
+              {index === currentPlayerIndex ? `→ ${player}` : player}
+            </span>
+          ))}
+        </div>
+
+        {Object.keys(currentScoreboard).map((category) => (
+          <div key={category} className={styles.scoreRow}>
+            <span>{category}</span>
+            {scoreboards.map((scoreboard, playerIndex) => {
+              const currentScore = scoreboard[category];
+              const isUsed = currentScore !== null;
+              const isActive = playerIndex === currentPlayerIndex;
+              const potentialScore =
+                isActive && dice ? calculateScore(category, dice) : null;
+              const showPreview =
+                isActive &&
+                !gameOver &&
+                dice &&
+                (!isUsed || currentScore !== potentialScore);
+
+              return (
+                <button
+                  key={playerIndex}
+                  className={styles.category}
+                  disabled={!isActive || isUsed}
+                  onClick={() => isActive && handleClick(category)}
+                >
+                  {isUsed ? (
+                    currentScore
+                  ) : showPreview ? (
+                    <span className={styles.previewScore}>
+                      {potentialScore}
+                    </span>
+                  ) : (
+                    "-"
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
-      <div className={styles.totals}> 
+      
+      <div className={styles.totals}>
         <div className={styles.subTotals}>
           <div className={styles.upperScore}>
             <span>Upper total: {upperScore}</span>

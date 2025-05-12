@@ -1,0 +1,31 @@
+  function handleCategorySelection(category) {
+    if (!dice || dice.length === 0) {
+      console.error("Dice is not properly defined.");
+      return;
+    }
+
+    const score = calculateScore(category, dice);
+
+    setScoreboards((prev) => {
+      const newScoreboards = [...prev];
+      const playerBoard = {
+        ...newScoreboards[currentPlayerIndex],
+        [category]: score,
+      };
+      newScoreboards[currentPlayerIndex] = playerBoard;
+      return newScoreboards;
+    });
+
+    const currentBoard = scoreboards[currentPlayerIndex];
+    const updatedBoard = { ...currentBoard, [category]: score };
+    const allUsed = Object.values(updatedBoard).every((val) => val !== null);
+
+    if (allUsed) {
+      const allPlayersDone = scoreboard.every((board) =>
+        Object.values(board).every((val) => val !== null)
+      );
+      if (allPlayersDone) {
+        setGameOver(true);
+      }
+    }
+  }

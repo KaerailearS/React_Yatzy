@@ -41,3 +41,32 @@ button:disabled {
 .currentPlayer {
   margin: 0;
 }
+.finalScores {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.finalScores li {
+  background-color: #f0f0f0; /* Light background */
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.finalScores li:first-child {
+  margin-top: 0.5rem;
+}
+
+.winner {
+  background-color: #d4edda; /* Soft green */
+  border: 1px solid #28a745;
+  color: #155724;
+}
+

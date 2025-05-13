@@ -36,6 +36,8 @@ export default function App() {
   const [players, setPlayers] = React.useState([]);
   const [gameStarted, setGameStarted] = React.useState(false);
   const [currentPlayerIndex, setCurrentPlayerIndex] = React.useState(0);
+  const [winner, setWinner] = React.useState(null);
+  const [finalScores, setFinalScores] = React.useState([]);
 
   function generateAllNewDice() {
     return Array.from({ length: NUM_DICE }, (_, i) => ({
@@ -89,6 +91,18 @@ export default function App() {
 
     if (allPlayersDone) {
       setGameOver(true);
+      const totalScores = updatedScoreboards.map((sb) =>
+        calculateTotalScore(sb)
+      );
+      const maxScore = Math.max(...totalScores);
+      const winningIndex = totalScores.indexOf(maxScore);
+
+      setWinner({
+        name: players[winningIndex],
+        score: maxScore,
+      });
+
+      setFinalScores(totalScores);
     } else {
       let nextIndex = currentPlayerIndex;
       do {
@@ -112,6 +126,8 @@ export default function App() {
     setGameOver(false);
     setCurrentPlayerIndex(0);
     setGameStarted(false);
+    setWinner(null);
+    setFinalScores([]);
   }
 
   return (
@@ -128,7 +144,9 @@ export default function App() {
         <>
           <main className="app">
             <h1>Yatzy</h1>
-            <h2 className={styles.currentPlayer}>Current player: {players[currentPlayerIndex]}</h2>
+            <h2 className={styles.currentPlayer}>
+              Current player: {players[currentPlayerIndex]}
+            </h2>
             <DiceContainer dice={dice} holdDie={holdDie} />
             <RollButton
               onRoll={rollDice}
@@ -147,17 +165,21 @@ export default function App() {
           {gameOver && (
             <div className={styles.gameOver}>
               <h2>Game over!</h2>
+              <p>
+                Winner: {winner.name} with {winner.score} points!
+              </p>
               <h3>Final scores:</h3>
-              <ul>
-                {scoreboards.map((board, index) => {
-                  const score = calculateScore(board);
-                  const isWinner = score === highestScore;
-                  return (
-                    <li key={index} style={styles.isWinner}>
-                      {players[index]}: {score} {isWinner && "🏆"}
-                    </li>
-                  );
-                })}
+              <ul className={styles.finalScores}>
+                {players.map((player, index) => (
+                  <li
+                    key={index}
+                    className={
+                      finalScores[index] === winner.score ? styles.winner : ""
+                    }
+                  >
+                    {player}: {finalScores[index]} points
+                  </li>
+                ))}
               </ul>
               <button onClick={resetGame}>New game?</button>
             </div>

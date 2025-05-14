@@ -1,3 +1,4 @@
+// function for creating an empty scoreboard when the game starts
 export default function createEmptyScoreboard(){
   return {
     "Ones": null,

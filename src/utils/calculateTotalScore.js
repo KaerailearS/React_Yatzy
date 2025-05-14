@@ -1,3 +1,4 @@
+// functions for calculating different types of score - upper, lower, bonus, total
 export function calculateUpperScore(scoreboard) {
   const upperCategories = ["Ones", "Twos", "Threes", "Fours", "Fives", "Sixes"];
   return upperCategories.reduce(

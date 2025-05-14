@@ -29,6 +29,7 @@ export default function App() {
     "Yatzy",
   ];
 
+  // alot of states for different things
   const [dice, setDice] = React.useState(() => generateAllNewDice());
   const [scoreboards, setScoreboards] = React.useState();
   const [rollsLeft, setRollsLeft] = React.useState(2);
@@ -39,6 +40,7 @@ export default function App() {
   const [winner, setWinner] = React.useState(null);
   const [finalScores, setFinalScores] = React.useState([]);
 
+  // generates all new dice in an array
   function generateAllNewDice() {
     return Array.from({ length: NUM_DICE }, (_, i) => ({
       id: i + 1,
@@ -47,6 +49,7 @@ export default function App() {
     }));
   }
 
+  // rolling the dice
   function rollDice() {
     if (rollsLeft > 0) {
       setDice((prev) =>
@@ -58,6 +61,7 @@ export default function App() {
     }
   }
 
+  // allows for holding die/dice if preferred
   function holdDie(id) {
     setDice((prevDice) =>
       prevDice.map((die) =>
@@ -66,6 +70,7 @@ export default function App() {
     );
   }
 
+  // a very convoluted function for handling the category to input score - updates scoreboards, total scores, chosen category, locked in score, moves turn order forward, checks if all categories filled, checks if all players have all categories filled, sets the winner, sets final scores
   function handleCategorySelection(category) {
     if (!dice || dice.length === 0) {
       console.error("Dice is not properly defined.");
@@ -118,6 +123,7 @@ export default function App() {
     }
   }
 
+  // resets all states to default / allows for new game to start
   function resetGame() {
     setPlayers([]);
     setScoreboards([]);

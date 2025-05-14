@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from '../styles/RollButton.module.css'
 
+// separate component for the button that handles rerolling dice
 export default function RollButton({ onRoll, rollsLeft, maxRolls}) {
   const isDisabled = rollsLeft <= 0
 

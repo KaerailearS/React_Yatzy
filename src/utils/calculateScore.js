@@ -1,3 +1,4 @@
+// function for calculating score for each individual category, based on its requirements, whether theyre filled, and then dice value. using switch/case for each different case, with separate functionality in each case
 export default function calculateScore(category, dice) {
   if (!Array.isArray(dice) || dice.length === 0) return 0;
   const values = dice.map((d) => d.value);

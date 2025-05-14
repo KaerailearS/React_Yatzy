@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from '../styles/PlayerSetup.module.css'
 
+// base logic for multiplayer - takes the number of players and their name, and then separates scoreboard for each player individually
 export default function PlayerSetup({ onStart }) {
   const [numPlayers, setNumPlayers] = React.useState(2);
   const [names, setNames] = React.useState(["", ""]);
@@ -20,6 +21,7 @@ export default function PlayerSetup({ onStart }) {
     onStart(playerList);
   };
 
+  // renders the initial landing page, with player count and name selection, with a start game button at the bottom
   return (
     <div className={styles.playerSetup}>
       <h2>Select number of Players</h2>

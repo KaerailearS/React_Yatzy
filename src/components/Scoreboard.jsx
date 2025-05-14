@@ -8,6 +8,7 @@ import {
   calculateTotalScore,
 } from "../utils/calculateTotalScore.js";
 
+// component for rendering the scoreboard - up to 4 scoreboards, depending on # of players, preview score for active player, locked in score for all players. (total score currently bugged)
 export default function Scoreboard({
   players,
   scoreboards,
@@ -23,6 +24,7 @@ export default function Scoreboard({
   const bonus = calculateBonus(upperScore);
   const totalScore = calculateTotalScore(currentScoreboard);
 
+  // handling the click on chosen category
   function handleClick(category) {
     if (currentScoreboard[category] === null && dice) {
       const score = calculateScore(category, dice);
@@ -81,7 +83,7 @@ export default function Scoreboard({
           </div>
         ))}
       </div>
-      
+      {/* total scores for current player*/}
       <div className={styles.totals}>
         <div className={styles.subTotals}>
           <div className={styles.upperScore}>
